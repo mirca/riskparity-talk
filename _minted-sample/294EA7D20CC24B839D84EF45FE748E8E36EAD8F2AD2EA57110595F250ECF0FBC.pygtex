@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZgt{}\PYGZgt{}\PYGZgt{}} \PYG{k+kn}{import} \PYG{n+nn}{riskparityportfolio} \PYG{k+kn}{as} \PYG{n+nn}{rp}
+\PYG{o}{\PYGZgt{}\PYGZgt{}\PYGZgt{}} \PYG{n}{my\PYGZus{}portfolio} \PYG{o}{=} \PYG{n}{rp}\PYG{o}{.}\PYG{n}{RiskParityPortfolio}\PYG{p}{(}\PYG{n}{covariance}\PYG{o}{=}\PYG{n}{Sigma}\PYG{p}{,}
+                                          \PYG{n}{budget}\PYG{o}{=}\PYG{n}{b}\PYG{p}{)}
+\PYG{o}{\PYGZgt{}\PYGZgt{}\PYGZgt{}} \PYG{n}{my\PYGZus{}portfolio}\PYG{o}{.}\PYG{n}{design}\PYG{p}{()}
+\PYG{o}{\PYGZgt{}\PYGZgt{}\PYGZgt{}} \PYG{n}{my\PYGZus{}portfolio}\PYG{o}{.}\PYG{n}{weights}\PYG{o}{.}\PYG{n}{numpy}\PYG{p}{()}
+\PYG{o}{\PYGZgt{}\PYGZgt{}\PYGZgt{}} \PYG{n}{my\PYGZus{}portfolio}\PYG{o}{.}\PYG{n}{risk\PYGZus{}contributions}\PYG{o}{.}\PYG{n}{numpy}\PYG{p}{()}
+\end{Verbatim}

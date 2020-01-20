@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{backtestChartStackedBar}\PYG{p}{(}\PYG{n}{bt}\PYG{p}{,} \PYG{n}{portfolio} \PYG{o}{=} \PYG{l+s}{\PYGZdq{}risk parity\PYGZdq{}}\PYG{p}{,}
+                        \PYG{n}{legend} \PYG{o}{=} \PYG{k+kc}{TRUE}\PYG{p}{)}
+\end{Verbatim}

@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{backtestChartCumReturns}\PYG{p}{(}\PYG{n}{bt}\PYG{p}{)} \PYG{o}{+} \PYG{n+nf}{theme}\PYG{p}{(}\PYG{n}{legend.position}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}top\PYGZdq{}}\PYG{p}{)}
+\end{Verbatim}
