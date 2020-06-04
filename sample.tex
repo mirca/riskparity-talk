@@ -1,5 +1,5 @@
 %!TEX program = xelatex
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 \usefonttheme[onlymath]{serif}
 \usepackage{blindtext}
 \usepackage{bm}
@@ -16,10 +16,10 @@
 
 \usetheme{Execushares}
 
-\title{Breaking Down Risk Parity Portfolios: A Practical Open Source Implementation}
+\title{Risk Parity: Convex, Non-convex, and Hierarchical Models}
 \subtitle{a talk by}
-\author{\textbf{Z\'e Vin\'icius}}
-\date{Jan. 22nd, 2020}
+\author{\textbf{Vin\'icius}}
+\date{May 15th, 2020}
 
 \setcounter{showSlideNumbers}{1}
 
@@ -30,53 +30,31 @@
 	\frame{\titlepage}
 
         \begin{frame}
-          \frametitle{whoami}
+          \frametitle{Contents}
               \vspace{.5cm}
-          \begin{itemize}
-            \item made in Brazil
-              \vspace{.25cm}
-            \item electrical engineer by training, computer scientist by passion/experience
-              \vspace{.25cm}
-            \item guest researcher at NIST\footnote{National Institute of Standards and Technology, Washington DC, US}
-              \vspace{.25cm}
-            \item software developer for Google summer of code with OpenAstronomy
-              \vspace{.25cm}
-            \item software engineer intern NASA\footnote{National Aeronautics and Space Administration,
-              Ames Research Center, Silicon Valley, US}
-              \vspace{.25cm}
-            \item \textbf{since Sept. 2019}: phd student at HKUST\footnote{The Hong Kong University of Science
-              and Technology}
-          \end{itemize}
+          \begin{enumerate}
+            \item Markowitz and Portfolio Optimization
+             \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Modern Portfolio Theory 101}
+            \item Risk Parity Portfolio
+             \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Historical events, convex, non-convex formulations,
+             and bleeding-edge solvers in $\mathsf{R}$ and $\mathsf{Python}$}
+            \item Hierarchical Risk Parity
+              \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Combining graph theory and portfolio design}
+            \item Conclusions
+              \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Some closing thoughts}
+          \end{enumerate}
         \end{frame}
 
 
 
-	%\begin{frame}
-	%	\frametitle{Contents}
-	%	\begin{enumerate}
-	%		\item Markowitz and Portfolio Optimization \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} The reasoning and background behind this theme}
-	%		\item   \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Just some Lorem Ipsum for filler}
-	%		\item Conclusions \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Some closing thoughts}
-	%	\end{enumerate}
-	%\end{frame}
-
 	\setcounter{showSlideNumbers}{0}
-        \section{Portfolio Optimization}
+        \section{Modern Portfolio Theory}
 	\setcounter{framenumber}{0}
 	\setcounter{showProgressBar}{1}
 	\setcounter{showSlideNumbers}{1}
 
-  %\section{Markowitz and Portfolio Optimization}
-  \begin{frame}
-    \frametitle{Stock Data}
-    \vspace{.8cm}
-    \begin{figure}[!htb]
-      \includegraphics[scale=.18]{images/phone_stocks.jpg}
-    \end{figure}
-  \end{frame}
-
 		\begin{frame}
-			\frametitle{Portfolio Optimization}
+			\frametitle{Modern Portfolio Theory}
                         \vspace{1cm}
                         \begin{itemize}
                           \item problem: how to allocate $B$ amount of money into $N$ assets?
@@ -130,47 +108,47 @@
                   \frametitle{From Capital to Risk Allocation}
                   \vspace{1cm}
                   \begin{center}
-                    \includegraphics[scale=.65]{codes/markowitz-rpp-comparison.eps}
+                    \includegraphics[scale=.62]{codes/markowitz-rpp-comparison.eps}
                   \end{center}
                 \end{frame}
 
-        %\begin{frame}
-        %    \frametitle{Problem Formulation}
-        %    \vspace{.5cm}
-        %    \begin{itemize}
-        %      \item volatility:
-        %        $\sigma(\bm{w}) = \sqrt{\bm{w}^\top\boldsymbol{\Sigma}\bm{w}}$
-        %      \item from Euler's theorem:
-        %        \begin{equation*}\sigma(\bm{w}) = \sum_{i} w_i \dfrac{\partial \sigma(\bm{w})}{\partial w_i}
-        %        = \sum_{i} \dfrac{w_i \left(\boldsymbol{\Sigma}\bm{w}\right)_{i}}{\sqrt{\bm{w}^\top\boldsymbol{\Sigma}\bm{w}}} \end{equation*}
-        %      \item $\dfrac{\partial \sigma(\bm{w})}{\partial w_i}$: \textbf{marginal risk contribution}
-        %      \item measures the sensitivity of the portfolio volatility to the $i$-th asset
-        %      \item it can be defined for other risk measures like VaR and CVaR
-        %    \end{itemize}
-        %\end{frame}
+        \begin{frame}
+            \frametitle{Problem Formulation}
+            \vspace{.5cm}
+            \begin{itemize}
+              \item volatility:
+                $\sigma(\bm{w}) = \sqrt{\bm{w}^\top\boldsymbol{\Sigma}\bm{w}}$
+              \item from Euler's theorem:
+                \begin{equation*}\sigma(\bm{w}) = \sum_{i} w_i \dfrac{\partial \sigma(\bm{w})}{\partial w_i}
+                = \sum_{i} \dfrac{w_i \left(\boldsymbol{\Sigma}\bm{w}\right)_{i}}{\sqrt{\bm{w}^\top\boldsymbol{\Sigma}\bm{w}}} \end{equation*}
+              \item $\dfrac{\partial \sigma(\bm{w})}{\partial w_i}$: \textbf{marginal risk contribution}
+              \item measures the sensitivity of the portfolio volatility to the $i$-th asset
+              \item it can be defined for other risk measures like VaR and CVaR
+            \end{itemize}
+        \end{frame}
 
-        %\begin{frame}
-        %  \frametitle{Problem Formulation}
-        %  \vspace{.75cm}
-        %  \begin{itemize}
-        %    \item \textbf{risk contribution} of the $i$-th asset to the total risk $\sigma(\bm{w})$:
-        %      \begin{equation*}
-        %        \textsf{RC}_{i} = w_i \dfrac{\partial \sigma(\bm{w})}{\partial w_i}
-        %      \end{equation*}
-        %    \item from Euler's theorem:
-        %      \begin{equation*}
-        %        \sum_{i}\textsf{RC}_i = \sigma(\bm{w})
-        %      \end{equation*}
-        %    \item \textbf{relative risk contribution} of the $i$-th asset to the total risk $\sigma(\bm{w})$:
-        %      \begin{equation*}
-        %        \textsf{RCC}_i = \dfrac{\textsf{RC}_i}{\sigma(\bm{w})} = \dfrac{w_i\left(\boldsymbol{\Sigma\bm{w}}\right)_i}{\bm{w}^\top\boldsymbol{\Sigma}\bm{w}},
-        %      \end{equation*}
-        %      so that
-        %      \begin{equation*}
-        %        \sum_{i}\textsf{RCC}_i = 1
-        %      \end{equation*}
-        %  \end{itemize}
-        %\end{frame}
+        \begin{frame}
+          \frametitle{Problem Formulation}
+          \vspace{.75cm}
+          \begin{itemize}
+            \item \textbf{risk contribution} of the $i$-th asset to the total risk $\sigma(\bm{w})$:
+              \begin{equation*}
+                \textsf{RC}_{i} = w_i \dfrac{\partial \sigma(\bm{w})}{\partial w_i}
+              \end{equation*}
+            \item from Euler's theorem:
+              \begin{equation*}
+                \sum_{i}\textsf{RC}_i = \sigma(\bm{w})
+              \end{equation*}
+            \item \textbf{relative risk contribution} of the $i$-th asset to the total risk $\sigma(\bm{w})$:
+              \begin{equation*}
+                \textsf{RCC}_i = \dfrac{\textsf{RC}_i}{\sigma(\bm{w})} = \dfrac{w_i\left(\boldsymbol{\Sigma\bm{w}}\right)_i}{\bm{w}^\top\boldsymbol{\Sigma}\bm{w}},
+              \end{equation*}
+              so that
+              \begin{equation*}
+                \sum_{i}\textsf{RCC}_i = 1
+              \end{equation*}
+          \end{itemize}
+        \end{frame}
 
         \begin{frame}
           \frametitle{Risk Parity: Problem Formulation}
@@ -346,7 +324,7 @@ library(portfolioBacktest)
 library(riskParityPortfolio)
 # download price data
 faang_data <- stockDataDownload(
-                  c("GOOG", "NFLX", "AAPL", "AMZN", "FB"),
+                   c("GOOG", "NFLX", "AAPL", "AMZN", "FB"),
                    from = "2014-01-01", to = "2019-06-25")
 risk_parity <- function(dataset) {
   prices <- dataset$adjusted
@@ -354,9 +332,9 @@ risk_parity <- function(dataset) {
   return(riskParityPortfolio(cov(log_returns))$w)
 }
 bt <- portfolioBacktest(
-        list("risk parity" = risk_parity,
-             "tangency"    = max_sharpe_ratio),
-        list(faang_data), T_rolling_window = 12*20,
+        portfolio_funs = list("risk parity" = risk_parity,
+                               "tangency"    = max_sharpe_ratio),
+        dataset_list = list(faang_data), T_rolling_window = 12*20,
         optimize_every = 3*20, rebalance_every = 3*20)
 \end{minted}
 \end{frame}
@@ -419,12 +397,209 @@ backtestChartCumReturns(bt) + theme(legend.position="top")
     "\textbf{riskParityPortfolio} provides a state-of-the-art
    implementation of rpps, otherwise only available at the top quantitative
    hedge funds"\linebreak
-   \begin{flushright}Tharsis Souza, PhD. Director of Strategic Innovation, Axioma Inc. Founder, OpenQuants.com.\end{flushright}
+   \begin{flushright}Tharsis Souza, PhD. VP at TwoSigma. Founder, OpenQuants.com.\end{flushright}
 
    {\footnotesize Disclaimer: views, thoughts, and opinions expressed in the text belong solely to the author,
    and not necessarily to the author’s employer, organization, committee or other group or individual.}
 \end{frame}
 
+\section{Hierachical Risk Parity}
+
+\begin{frame}{Graph Theory 101}
+  \vspace{.5cm}
+
+  \begin{tabular}{cl}
+          \begin{tabular}{l}
+             \parbox{0.5\linewidth}{
+               %  change the parbox width as appropiate
+  \begin{itemize}
+    \item A graph $\mathcal{G} = \left(\mathcal{V}, \mathcal{E}, \bm{W}\right)$
+      \pause
+    \item Vertex set $\mathcal{V} = \left\{1, 2, \dots, p\right\}$
+      \pause
+    \item Edge set $\mathcal{E} \displaystyle \subseteq \left\{\left\{u, v\right\}: u,v \in \mathcal{V}\right\}$
+      \pause
+    \item Weighted adjacency matrix $\bm{W}$, $\bm{W} \in \mathbb{R}_{+}^{p\times p}$
+      \pause
+     \begin{itemize}
+       \item $W_{ii} = 0, W_{ij} > 0 ~\text{iff}~ \{i,j\} \in \mathcal{E}, W_{ij} = 0~\text{otherwise}$
+      \pause
+       \end{itemize}
+  \end{itemize}
+    }
+  \end{tabular} &
+         \begin{tabular}{l}
+    \includegraphics[scale=0.65]{images/graph-with-edge-label.eps}
+          \end{tabular}
+  \\
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Graph Theory 101: Tree graph}
+  \vspace{.5cm}
+  \begin{itemize}
+    \item Tree graph: fully-connected graph such that $|\mathcal{E}| = p-1$
+    \pause
+  \end{itemize}
+  \begin{figure}
+    \centering
+    \includegraphics[scale=0.45]{images/tree-original.eps}
+    \includegraphics[scale=0.45]{images/dendogram-original.eps}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Graph Theory 101: Minimum Spanning Tree}
+  \vspace{.5cm}
+\begin{tabular}{cl}
+        \begin{tabular}{l}
+           \parbox{0.5\linewidth}{
+  \begin{itemize}
+    \item \textbf{def}: an MST of a graph $\mathcal{G}$ is a tree graph spans $\mathcal{G}$ with the minimum possible sum of edge weights
+    \item An MST is \textbf{unique} as long as the edge weights are distinct
+  \end{itemize}
+     }
+  \end{tabular} &
+         \begin{tabular}{l}
+    \includegraphics[scale=0.65]{images/mst-example.eps}
+          \end{tabular}
+  \\
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Graph Theory 101: Minimum Spanning Tree}
+  \vspace{.5cm}
+\begin{algorithm}[H]
+  \caption{BuildMST (Kruskal's algorithm)}
+    \SetAlgoLined
+    \KwData{Distances between nodes $\left\{{d}_{ij}\right\}_{1 \leq i, j \leq p}$}
+    \KwResult{$\mathcal{G}_{\mathsf{MST}}$}
+    $\triangleright$ \text{start with an empty graph} $\mathcal{G}_{\mathsf{MST}} \leftarrow (\mathcal{V}_{\mathsf{MST}}, \mathcal{E}_{\mathsf{MST}})$ \\
+    $\mathcal{E}_{\mathsf{MST}} \leftarrow \emptyset$\\
+    $\mathcal{V}_{\mathsf{MST}} \leftarrow \{i\}_{1 \leq i \leq p}$\\
+    \For{$\{i, j\} \in \mathcal{V}^2_{\mathsf{MST}}$ ordered by increasing $d_{ij}$}{
+      $\triangleright$ \text{Verify that $i$ and $j$ are not already connected by a path} \\
+      \If{\textbf{not} $\mathsf{connected}(i, j)$}{
+      $\mathcal{E}_{\mathsf{MST}} \leftarrow \mathcal{E}_{\mathsf{MST}}\cup\left\{\left\{i, j\right\}\right\}$
+      }
+    }
+\end{algorithm}
+\end{frame}
+
+\begin{frame}{Hierarchical Risk Parity}
+  \vspace{.5cm}
+  \begin{itemize}
+    \item \textbf{problem:} modern portfolio theory is sensitive to estimation errors on $\boldsymbol\mu$ and $\boldsymbol\Sigma$
+  \end{itemize}
+  \pause
+  \begin{itemize}
+  \pause
+    \item Alternatives:
+      \begin{itemize}
+        \item Robustness
+  \pause
+        \item Bayesian priors, e.g., Black and Litterman
+  \pause
+        \item Improving inverse covariance matrix estimation, e.g., Ledoit and Wolf
+      \end{itemize}
+  \end{itemize}
+  \pause
+  \begin{itemize}
+    \item HRP idea: exploit the intrinsic hierarchy of the correlation matrix
+  \pause
+    \item weights are allocated in a top-down fashion, just like how asset managers build their portfolios, e.g., from asset class, to sectors, to individual securities
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Hierarchical Risk Parity}
+  \vspace{.5cm}
+  The HRP algorithm proposed by Lopez de Prado, 2016, has basically two steps:
+  \begin{enumerate}
+  \pause
+    \item Build an MST with input matrix: $d_{ij} = \sqrt{\frac{1}{2}(1 - \rho_{ij})}$, where $\rho_{ij}$ is the correlation between stock $i$ and $j$
+  \pause
+    \item Use \textbf{Recursive Bisection} to allocate the portfolio weights
+  \end{enumerate}
+\end{frame}
+\begin{frame}{Hierachical Risk Parity}
+  \vspace{.5cm}
+  \begin{algorithm}[H]
+    \scriptsize
+  \caption{Recursive Bisection}
+    \SetAlgoLined
+    \KwData{Distances between nodes $\left\{{d}_{ij}\right\}_{1 \leq i, j \leq p}$, estimated covariance matrix $\boldsymbol\Sigma$}
+    \KwResult{Portfolio allocation $\bm{w}$}
+    $\triangleright$ Initialization \\
+    \hspace{.5cm} $\bullet$ set the list of items $L = \{L_{0}\}$, with $L_{0} = \{i\}_{i=1, \dots, p}$ according to the order obtained by the dendogram\\
+    \hspace{.5cm} $\bullet$ assign a unit weight to all assets: $w_i = 1, ~\forall~ i = 1, \dots, p$\\
+    $\triangleright$ if $\vert L_i \vert = 1,~\forall ~L_i \in L$ then stop.\\
+    $\triangleright$ for each $L_i \in L$ such that $\vert L_i\vert$:\\
+    \hspace{.5cm} $\bullet$ bisect $L_i$ into two subsets, $L_i^{(1)} \cup L_i^{(2)} = L_i$, where $\vert L_i^{(1)}\vert = \mathsf{round}(\frac{1}{2}\vert L_i\vert)$, and the order is preserved \\
+    \hspace{.5cm} $\bullet$ define the variance of $L_{i}^{(j)}$ as $\tilde{\sigma}_{i}^{(j)} = (\theta^{(j)}_{i})^\top \boldsymbol\Sigma^{(j)}_{i} \theta^{(j)}_{i}$,
+    where $V^{(j)}_{i}$ is the covariance matrix between the constituents of the $L^{(j)}_{i}$ bisection and $\theta^{(j)}_{i}$ are the inverse variance weights\\
+    \hspace{.5cm} $\bullet$ compute the split factor $\alpha_i = 1 - \dfrac{\tilde{\sigma}_{i}^{(1)}}{\tilde{\sigma}_{i}^{(1)} + \tilde{\sigma}_{i}^{(2)}}$\\
+    \hspace{.5cm} $\bullet$ re-scale allocations $\bm{w}_{l}$ by a factor of $\alpha_i, ~\forall~ l \in L^{(1)}_i$\\
+    \hspace{.5cm} $\bullet$ re-scale allocations $\bm{w}_{l}$ by a factor of $1 - \alpha_i, ~\forall~ l \in L^{(2)}_i$\\
+    go to \textbf{4}
+  \end{algorithm}
+\end{frame}
+
+\begin{frame}{Hierachical Risk Parity}
+  \begin{center}
+  \includegraphics[scale=.65]{images/dendogram-original.eps}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{HRP in Practice}
+  \begin{itemize}
+    \item $\mathsf{pip~install~\textbf{mfinlab}}$
+\end{itemize}
+
+\begin{minted}[
+  frame=lines,
+  framesep=2mm,
+  baselinestretch=1.2,
+  fontsize=\footnotesize,
+  ]{python}
+from mlfinlab.portfolio_optimization.hrp import HierarchicalRiskParity
+
+prices = pdr.get_data_yahoo(stocks_, start="2018-12-31",
+                            end="2019-12-31")[['Adj Close']]
+hrp = HierarchicalRiskParity()
+hrp.allocate(asset_prices=prices)
+hrp_weights = hrp.weights
+\end{minted}
+\end{frame}
+
+\begin{frame}
+  \frametitle{HRP in Practice}
+  \begin{figure}
+  \pause
+    \includegraphics[scale=.5]{images/rpp_allocation.eps}
+  \pause
+    \includegraphics[scale=.5]{images/hrp_allocation.eps}
+  \end{figure}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{HRP in Practice}
+  \begin{figure}
+    \includegraphics[scale=.5]{images/risk_contrib_rpp.eps}
+  \pause
+    \includegraphics[scale=.5]{images/risk_contrib_hrp.eps}
+  \end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{HRP in Practice}
+Now, let's evaluate those portfolios during the COVID-19 2020 crisis:
+\pause
+\begin{figure}
+  \includegraphics[scale=.5]{images/cum_returns.eps}
+\end{figure}
+\end{frame}
 
 \begin{frame}{Takeaways}
   \vspace{.5cm}
@@ -432,12 +607,10 @@ backtestChartCumReturns(bt) + theme(legend.position="top")
     \item risk parity represents a shift from \textbf{capital} allocation to \textbf{risk} allocation
             \pause
         \vspace{.25cm}
-    \item risk parity portfolios have been praised for their robustness in different market "weathers"
-            \pause
-        \vspace{.25cm}
     \item non-convex? no problem!
             \pause
         \vspace{.25cm}
+    \item hierarchical risk parity provides a natural way to apply graph theory in portfolio allocation
     \item GitHub repositories to stay tuned:
       \begin{itemize}
         \item dppalomar/riskParityPortfolio
