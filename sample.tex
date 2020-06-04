@@ -16,10 +16,10 @@
 
 \usetheme{Execushares}
 
-\title{Risk Parity: Convex, Non-convex, and Hierarchical Models}
+\title{Risk Parity Portfolio: Theory and Practice}
 \subtitle{a talk by}
-\author{\textbf{Vin\'icius}}
-\date{May 15th, 2020}
+\author{\textbf{Z\'e Vin\'icius}}
+\date{June 4th, 2020}
 
 \setcounter{showSlideNumbers}{1}
 
@@ -37,9 +37,9 @@
              \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Modern Portfolio Theory 101}
             \item Risk Parity Portfolio
              \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Historical events, convex, non-convex formulations,
-             and bleeding-edge solvers in $\mathsf{R}$ and $\mathsf{Python}$}
-            \item Hierarchical Risk Parity
-              \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Combining graph theory and portfolio design}
+             and solvers in $\mathsf{R}$ and $\mathsf{Python}$}
+            %\item Hierarchical Risk Parity
+            %  \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Combining graph theory and portfolio design}
             \item Conclusions
               \\ \textcolor{ExecusharesGrey}{\footnotesize\hspace{1em} Some closing thoughts}
           \end{enumerate}
@@ -389,238 +389,238 @@ backtestChartCumReturns(bt) + theme(legend.position="top")
 \end{figure}
 \end{frame}
 
-\begin{frame}{Testimonials}
-  \vspace{.5cm}
-  "I can easily run optimizations across new covariance matrices in seconds, which has helped streamline portfolio allocation testing"\linebreak
-  \begin{flushright}Jonathan Dane, CFA. Director of Portfolio Strategy \& Market Research, The Coury Firm.\end{flushright}
+%\begin{frame}{Testimonials}
+%  \vspace{.5cm}
+%  "I can easily run optimizations across new covariance matrices in seconds, which has helped streamline portfolio allocation testing"\linebreak
+%  \begin{flushright}Jonathan Dane, CFA. Director of Portfolio Strategy \& Market Research, The Coury Firm.\end{flushright}
+%
+%    "\textbf{riskParityPortfolio} provides a state-of-the-art
+%   implementation of rpps, otherwise only available at the top quantitative
+%   hedge funds"\linebreak
+%   \begin{flushright}Tharsis Souza, PhD. VP at TwoSigma. Founder, OpenQuants.com.\end{flushright}
+%
+%   {\footnotesize Disclaimer: views, thoughts, and opinions expressed in the text belong solely to the author,
+%   and not necessarily to the author’s employer, organization, committee or other group or individual.}
+%\end{frame}
 
-    "\textbf{riskParityPortfolio} provides a state-of-the-art
-   implementation of rpps, otherwise only available at the top quantitative
-   hedge funds"\linebreak
-   \begin{flushright}Tharsis Souza, PhD. VP at TwoSigma. Founder, OpenQuants.com.\end{flushright}
-
-   {\footnotesize Disclaimer: views, thoughts, and opinions expressed in the text belong solely to the author,
-   and not necessarily to the author’s employer, organization, committee or other group or individual.}
-\end{frame}
-
-\section{Hierachical Risk Parity}
-
-\begin{frame}{Graph Theory 101}
-  \vspace{.5cm}
-
-  \begin{tabular}{cl}
-          \begin{tabular}{l}
-             \parbox{0.5\linewidth}{
-               %  change the parbox width as appropiate
-  \begin{itemize}
-    \item A graph $\mathcal{G} = \left(\mathcal{V}, \mathcal{E}, \bm{W}\right)$
-      \pause
-    \item Vertex set $\mathcal{V} = \left\{1, 2, \dots, p\right\}$
-      \pause
-    \item Edge set $\mathcal{E} \displaystyle \subseteq \left\{\left\{u, v\right\}: u,v \in \mathcal{V}\right\}$
-      \pause
-    \item Weighted adjacency matrix $\bm{W}$, $\bm{W} \in \mathbb{R}_{+}^{p\times p}$
-      \pause
-     \begin{itemize}
-       \item $W_{ii} = 0, W_{ij} > 0 ~\text{iff}~ \{i,j\} \in \mathcal{E}, W_{ij} = 0~\text{otherwise}$
-      \pause
-       \end{itemize}
-  \end{itemize}
-    }
-  \end{tabular} &
-         \begin{tabular}{l}
-    \includegraphics[scale=0.65]{images/graph-with-edge-label.eps}
-          \end{tabular}
-  \\
-\end{tabular}
-\end{frame}
-
-\begin{frame}{Graph Theory 101: Tree graph}
-  \vspace{.5cm}
-  \begin{itemize}
-    \item Tree graph: fully-connected graph such that $|\mathcal{E}| = p-1$
-    \pause
-  \end{itemize}
-  \begin{figure}
-    \centering
-    \includegraphics[scale=0.45]{images/tree-original.eps}
-    \includegraphics[scale=0.45]{images/dendogram-original.eps}
-  \end{figure}
-\end{frame}
-
-\begin{frame}{Graph Theory 101: Minimum Spanning Tree}
-  \vspace{.5cm}
-\begin{tabular}{cl}
-        \begin{tabular}{l}
-           \parbox{0.5\linewidth}{
-  \begin{itemize}
-    \item \textbf{def}: an MST of a graph $\mathcal{G}$ is a tree graph spans $\mathcal{G}$ with the minimum possible sum of edge weights
-    \item An MST is \textbf{unique} as long as the edge weights are distinct
-  \end{itemize}
-     }
-  \end{tabular} &
-         \begin{tabular}{l}
-    \includegraphics[scale=0.65]{images/mst-example.eps}
-          \end{tabular}
-  \\
-\end{tabular}
-\end{frame}
-
-\begin{frame}{Graph Theory 101: Minimum Spanning Tree}
-  \vspace{.5cm}
-\begin{algorithm}[H]
-  \caption{BuildMST (Kruskal's algorithm)}
-    \SetAlgoLined
-    \KwData{Distances between nodes $\left\{{d}_{ij}\right\}_{1 \leq i, j \leq p}$}
-    \KwResult{$\mathcal{G}_{\mathsf{MST}}$}
-    $\triangleright$ \text{start with an empty graph} $\mathcal{G}_{\mathsf{MST}} \leftarrow (\mathcal{V}_{\mathsf{MST}}, \mathcal{E}_{\mathsf{MST}})$ \\
-    $\mathcal{E}_{\mathsf{MST}} \leftarrow \emptyset$\\
-    $\mathcal{V}_{\mathsf{MST}} \leftarrow \{i\}_{1 \leq i \leq p}$\\
-    \For{$\{i, j\} \in \mathcal{V}^2_{\mathsf{MST}}$ ordered by increasing $d_{ij}$}{
-      $\triangleright$ \text{Verify that $i$ and $j$ are not already connected by a path} \\
-      \If{\textbf{not} $\mathsf{connected}(i, j)$}{
-      $\mathcal{E}_{\mathsf{MST}} \leftarrow \mathcal{E}_{\mathsf{MST}}\cup\left\{\left\{i, j\right\}\right\}$
-      }
-    }
-\end{algorithm}
-\end{frame}
-
-\begin{frame}{Hierarchical Risk Parity}
-  \vspace{.5cm}
-  \begin{itemize}
-    \item \textbf{problem:} modern portfolio theory is sensitive to estimation errors on $\boldsymbol\mu$ and $\boldsymbol\Sigma$
-  \end{itemize}
-  \pause
-  \begin{itemize}
-  \pause
-    \item Alternatives:
-      \begin{itemize}
-        \item Robustness
-  \pause
-        \item Bayesian priors, e.g., Black and Litterman
-  \pause
-        \item Improving inverse covariance matrix estimation, e.g., Ledoit and Wolf
-      \end{itemize}
-  \end{itemize}
-  \pause
-  \begin{itemize}
-    \item HRP idea: exploit the intrinsic hierarchy of the correlation matrix
-  \pause
-    \item weights are allocated in a top-down fashion, just like how asset managers build their portfolios, e.g., from asset class, to sectors, to individual securities
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Hierarchical Risk Parity}
-  \vspace{.5cm}
-  The HRP algorithm proposed by Lopez de Prado, 2016, has basically two steps:
-  \begin{enumerate}
-  \pause
-    \item Build an MST with input matrix: $d_{ij} = \sqrt{\frac{1}{2}(1 - \rho_{ij})}$, where $\rho_{ij}$ is the correlation between stock $i$ and $j$
-  \pause
-    \item Use \textbf{Recursive Bisection} to allocate the portfolio weights
-  \end{enumerate}
-\end{frame}
-\begin{frame}{Hierachical Risk Parity}
-  \vspace{.5cm}
-  \begin{algorithm}[H]
-    \scriptsize
-  \caption{Recursive Bisection}
-    \SetAlgoLined
-    \KwData{Distances between nodes $\left\{{d}_{ij}\right\}_{1 \leq i, j \leq p}$, estimated covariance matrix $\boldsymbol\Sigma$}
-    \KwResult{Portfolio allocation $\bm{w}$}
-    $\triangleright$ Initialization \\
-    \hspace{.5cm} $\bullet$ set the list of items $L = \{L_{0}\}$, with $L_{0} = \{i\}_{i=1, \dots, p}$ according to the order obtained by the dendogram\\
-    \hspace{.5cm} $\bullet$ assign a unit weight to all assets: $w_i = 1, ~\forall~ i = 1, \dots, p$\\
-    $\triangleright$ if $\vert L_i \vert = 1,~\forall ~L_i \in L$ then stop.\\
-    $\triangleright$ for each $L_i \in L$ such that $\vert L_i\vert$:\\
-    \hspace{.5cm} $\bullet$ bisect $L_i$ into two subsets, $L_i^{(1)} \cup L_i^{(2)} = L_i$, where $\vert L_i^{(1)}\vert = \mathsf{round}(\frac{1}{2}\vert L_i\vert)$, and the order is preserved \\
-    \hspace{.5cm} $\bullet$ define the variance of $L_{i}^{(j)}$ as $\tilde{\sigma}_{i}^{(j)} = (\theta^{(j)}_{i})^\top \boldsymbol\Sigma^{(j)}_{i} \theta^{(j)}_{i}$,
-    where $V^{(j)}_{i}$ is the covariance matrix between the constituents of the $L^{(j)}_{i}$ bisection and $\theta^{(j)}_{i}$ are the inverse variance weights\\
-    \hspace{.5cm} $\bullet$ compute the split factor $\alpha_i = 1 - \dfrac{\tilde{\sigma}_{i}^{(1)}}{\tilde{\sigma}_{i}^{(1)} + \tilde{\sigma}_{i}^{(2)}}$\\
-    \hspace{.5cm} $\bullet$ re-scale allocations $\bm{w}_{l}$ by a factor of $\alpha_i, ~\forall~ l \in L^{(1)}_i$\\
-    \hspace{.5cm} $\bullet$ re-scale allocations $\bm{w}_{l}$ by a factor of $1 - \alpha_i, ~\forall~ l \in L^{(2)}_i$\\
-    go to \textbf{4}
-  \end{algorithm}
-\end{frame}
-
-\begin{frame}{Hierachical Risk Parity}
-  \begin{center}
-  \includegraphics[scale=.65]{images/dendogram-original.eps}
-  \end{center}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{HRP in Practice}
-  \begin{itemize}
-    \item $\mathsf{pip~install~\textbf{mfinlab}}$
-\end{itemize}
-
-\begin{minted}[
-  frame=lines,
-  framesep=2mm,
-  baselinestretch=1.2,
-  fontsize=\footnotesize,
-  ]{python}
-from mlfinlab.portfolio_optimization.hrp import HierarchicalRiskParity
-
-prices = pdr.get_data_yahoo(stocks_, start="2018-12-31",
-                            end="2019-12-31")[['Adj Close']]
-hrp = HierarchicalRiskParity()
-hrp.allocate(asset_prices=prices)
-hrp_weights = hrp.weights
-\end{minted}
-\end{frame}
-
-\begin{frame}
-  \frametitle{HRP in Practice}
-  \begin{figure}
-  \pause
-    \includegraphics[scale=.5]{images/rpp_allocation.eps}
-  \pause
-    \includegraphics[scale=.5]{images/hrp_allocation.eps}
-  \end{figure}
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{HRP in Practice}
-  \begin{figure}
-    \includegraphics[scale=.5]{images/risk_contrib_rpp.eps}
-  \pause
-    \includegraphics[scale=.5]{images/risk_contrib_hrp.eps}
-  \end{figure}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{HRP in Practice}
-Now, let's evaluate those portfolios during the COVID-19 2020 crisis:
-\pause
-\begin{figure}
-  \includegraphics[scale=.5]{images/cum_returns.eps}
-\end{figure}
-\end{frame}
-
-\begin{frame}{Takeaways}
-  \vspace{.5cm}
-  \begin{enumerate}
-    \item risk parity represents a shift from \textbf{capital} allocation to \textbf{risk} allocation
-            \pause
-        \vspace{.25cm}
-    \item non-convex? no problem!
-            \pause
-        \vspace{.25cm}
-    \item hierarchical risk parity provides a natural way to apply graph theory in portfolio allocation
-    \item GitHub repositories to stay tuned:
-      \begin{itemize}
-        \item dppalomar/riskParityPortfolio
-        \item dppalomar/riskparity.py
-        \item dppalomar/portfolioBacktest
-      \end{itemize}
-  \end{enumerate}
-\end{frame}
-
-\section{Thank you! Questions?}
+%\section{Hierachical Risk Parity}
+%
+%\begin{frame}{Graph Theory 101}
+%  \vspace{.5cm}
+%
+%  \begin{tabular}{cl}
+%          \begin{tabular}{l}
+%             \parbox{0.5\linewidth}{
+%               %  change the parbox width as appropiate
+%  \begin{itemize}
+%    \item A graph $\mathcal{G} = \left(\mathcal{V}, \mathcal{E}, \bm{W}\right)$
+%      \pause
+%    \item Vertex set $\mathcal{V} = \left\{1, 2, \dots, p\right\}$
+%      \pause
+%    \item Edge set $\mathcal{E} \displaystyle \subseteq \left\{\left\{u, v\right\}: u,v \in \mathcal{V}\right\}$
+%      \pause
+%    \item Weighted adjacency matrix $\bm{W}$, $\bm{W} \in \mathbb{R}_{+}^{p\times p}$
+%      \pause
+%     \begin{itemize}
+%       \item $W_{ii} = 0, W_{ij} > 0 ~\text{iff}~ \{i,j\} \in \mathcal{E}, W_{ij} = 0~\text{otherwise}$
+%      \pause
+%       \end{itemize}
+%  \end{itemize}
+%    }
+%  \end{tabular} &
+%         \begin{tabular}{l}
+%    \includegraphics[scale=0.65]{images/graph-with-edge-label.eps}
+%          \end{tabular}
+%  \\
+%\end{tabular}
+%\end{frame}
+%
+%\begin{frame}{Graph Theory 101: Tree graph}
+%  \vspace{.5cm}
+%  \begin{itemize}
+%    \item Tree graph: fully-connected graph such that $|\mathcal{E}| = p-1$
+%    \pause
+%  \end{itemize}
+%  \begin{figure}
+%    \centering
+%    \includegraphics[scale=0.45]{images/tree-original.eps}
+%    \includegraphics[scale=0.45]{images/dendogram-original.eps}
+%  \end{figure}
+%\end{frame}
+%
+%\begin{frame}{Graph Theory 101: Minimum Spanning Tree}
+%  \vspace{.5cm}
+%\begin{tabular}{cl}
+%        \begin{tabular}{l}
+%           \parbox{0.5\linewidth}{
+%  \begin{itemize}
+%    \item \textbf{def}: an MST of a graph $\mathcal{G}$ is a tree graph spans $\mathcal{G}$ with the minimum possible sum of edge weights
+%    \item An MST is \textbf{unique} as long as the edge weights are distinct
+%  \end{itemize}
+%     }
+%  \end{tabular} &
+%         \begin{tabular}{l}
+%    \includegraphics[scale=0.65]{images/mst-example.eps}
+%          \end{tabular}
+%  \\
+%\end{tabular}
+%\end{frame}
+%
+%\begin{frame}{Graph Theory 101: Minimum Spanning Tree}
+%  \vspace{.5cm}
+%\begin{algorithm}[H]
+%  \caption{BuildMST (Kruskal's algorithm)}
+%    \SetAlgoLined
+%    \KwData{Distances between nodes $\left\{{d}_{ij}\right\}_{1 \leq i, j \leq p}$}
+%    \KwResult{$\mathcal{G}_{\mathsf{MST}}$}
+%    $\triangleright$ \text{start with an empty graph} $\mathcal{G}_{\mathsf{MST}} \leftarrow (\mathcal{V}_{\mathsf{MST}}, \mathcal{E}_{\mathsf{MST}})$ \\
+%    $\mathcal{E}_{\mathsf{MST}} \leftarrow \emptyset$\\
+%    $\mathcal{V}_{\mathsf{MST}} \leftarrow \{i\}_{1 \leq i \leq p}$\\
+%    \For{$\{i, j\} \in \mathcal{V}^2_{\mathsf{MST}}$ ordered by increasing $d_{ij}$}{
+%      $\triangleright$ \text{Verify that $i$ and $j$ are not already connected by a path} \\
+%      \If{\textbf{not} $\mathsf{connected}(i, j)$}{
+%      $\mathcal{E}_{\mathsf{MST}} \leftarrow \mathcal{E}_{\mathsf{MST}}\cup\left\{\left\{i, j\right\}\right\}$
+%      }
+%    }
+%\end{algorithm}
+%\end{frame}
+%
+%\begin{frame}{Hierarchical Risk Parity}
+%  \vspace{.5cm}
+%  \begin{itemize}
+%    \item \textbf{problem:} modern portfolio theory is sensitive to estimation errors on $\boldsymbol\mu$ and $\boldsymbol\Sigma$
+%  \end{itemize}
+%  \pause
+%  \begin{itemize}
+%  \pause
+%    \item Alternatives:
+%      \begin{itemize}
+%        \item Robustness
+%  \pause
+%        \item Bayesian priors, e.g., Black and Litterman
+%  \pause
+%        \item Improving inverse covariance matrix estimation, e.g., Ledoit and Wolf
+%      \end{itemize}
+%  \end{itemize}
+%  \pause
+%  \begin{itemize}
+%    \item HRP idea: exploit the intrinsic hierarchy of the correlation matrix
+%  \pause
+%    \item weights are allocated in a top-down fashion, just like how asset managers build their portfolios, e.g., from asset class, to sectors, to individual securities
+%  \end{itemize}
+%\end{frame}
+%
+%\begin{frame}{Hierarchical Risk Parity}
+%  \vspace{.5cm}
+%  The HRP algorithm proposed by Lopez de Prado, 2016, has basically two steps:
+%  \begin{enumerate}
+%  \pause
+%    \item Build an MST with input matrix: $d_{ij} = \sqrt{\frac{1}{2}(1 - \rho_{ij})}$, where $\rho_{ij}$ is the correlation between stock $i$ and $j$
+%  \pause
+%    \item Use \textbf{Recursive Bisection} to allocate the portfolio weights
+%  \end{enumerate}
+%\end{frame}
+%\begin{frame}{Hierachical Risk Parity}
+%  \vspace{.5cm}
+%  \begin{algorithm}[H]
+%    \scriptsize
+%  \caption{Recursive Bisection}
+%    \SetAlgoLined
+%    \KwData{Distances between nodes $\left\{{d}_{ij}\right\}_{1 \leq i, j \leq p}$, estimated covariance matrix $\boldsymbol\Sigma$}
+%    \KwResult{Portfolio allocation $\bm{w}$}
+%    $\triangleright$ Initialization \\
+%    \hspace{.5cm} $\bullet$ set the list of items $L = \{L_{0}\}$, with $L_{0} = \{i\}_{i=1, \dots, p}$ according to the order obtained by the dendogram\\
+%    \hspace{.5cm} $\bullet$ assign a unit weight to all assets: $w_i = 1, ~\forall~ i = 1, \dots, p$\\
+%    $\triangleright$ if $\vert L_i \vert = 1,~\forall ~L_i \in L$ then stop.\\
+%    $\triangleright$ for each $L_i \in L$ such that $\vert L_i\vert$:\\
+%    \hspace{.5cm} $\bullet$ bisect $L_i$ into two subsets, $L_i^{(1)} \cup L_i^{(2)} = L_i$, where $\vert L_i^{(1)}\vert = \mathsf{round}(\frac{1}{2}\vert L_i\vert)$, and the order is preserved \\
+%    \hspace{.5cm} $\bullet$ define the variance of $L_{i}^{(j)}$ as $\tilde{\sigma}_{i}^{(j)} = (\theta^{(j)}_{i})^\top \boldsymbol\Sigma^{(j)}_{i} \theta^{(j)}_{i}$,
+%    where $V^{(j)}_{i}$ is the covariance matrix between the constituents of the $L^{(j)}_{i}$ bisection and $\theta^{(j)}_{i}$ are the inverse variance weights\\
+%    \hspace{.5cm} $\bullet$ compute the split factor $\alpha_i = 1 - \dfrac{\tilde{\sigma}_{i}^{(1)}}{\tilde{\sigma}_{i}^{(1)} + \tilde{\sigma}_{i}^{(2)}}$\\
+%    \hspace{.5cm} $\bullet$ re-scale allocations $\bm{w}_{l}$ by a factor of $\alpha_i, ~\forall~ l \in L^{(1)}_i$\\
+%    \hspace{.5cm} $\bullet$ re-scale allocations $\bm{w}_{l}$ by a factor of $1 - \alpha_i, ~\forall~ l \in L^{(2)}_i$\\
+%    go to \textbf{4}
+%  \end{algorithm}
+%\end{frame}
+%
+%\begin{frame}{Hierachical Risk Parity}
+%  \begin{center}
+%  \includegraphics[scale=.65]{images/dendogram-original.eps}
+%  \end{center}
+%\end{frame}
+%
+%\begin{frame}[fragile]
+%  \frametitle{HRP in Practice}
+%  \begin{itemize}
+%    \item $\mathsf{pip~install~\textbf{mfinlab}}$
+%\end{itemize}
+%
+%\begin{minted}[
+%  frame=lines,
+%  framesep=2mm,
+%  baselinestretch=1.2,
+%  fontsize=\footnotesize,
+%  ]{python}
+%from mlfinlab.portfolio_optimization.hrp import HierarchicalRiskParity
+%
+%prices = pdr.get_data_yahoo(stocks_, start="2018-12-31",
+%                            end="2019-12-31")[['Adj Close']]
+%hrp = HierarchicalRiskParity()
+%hrp.allocate(asset_prices=prices)
+%hrp_weights = hrp.weights
+%\end{minted}
+%\end{frame}
+%
+%\begin{frame}
+%  \frametitle{HRP in Practice}
+%  \begin{figure}
+%  \pause
+%    \includegraphics[scale=.5]{images/rpp_allocation.eps}
+%  \pause
+%    \includegraphics[scale=.5]{images/hrp_allocation.eps}
+%  \end{figure}
+%\end{frame}
+%
+%
+%\begin{frame}
+%  \frametitle{HRP in Practice}
+%  \begin{figure}
+%    \includegraphics[scale=.5]{images/risk_contrib_rpp.eps}
+%  \pause
+%    \includegraphics[scale=.5]{images/risk_contrib_hrp.eps}
+%  \end{figure}
+%\end{frame}
+%
+%
+%\begin{frame}
+%\frametitle{HRP in Practice}
+%Now, let's evaluate those portfolios during the COVID-19 2020 crisis:
+%\pause
+%\begin{figure}
+%  \includegraphics[scale=.5]{images/cum_returns.eps}
+%\end{figure}
+%\end{frame}
+%
+%\begin{frame}{Takeaways}
+%  \vspace{.5cm}
+%  \begin{enumerate}
+%    \item risk parity represents a shift from \textbf{capital} allocation to \textbf{risk} allocation
+%            \pause
+%        \vspace{.25cm}
+%    \item non-convex? no problem!
+%            \pause
+%        \vspace{.25cm}
+%    \item hierarchical risk parity provides a natural way to apply graph theory in portfolio allocation
+%    \item GitHub repositories to stay tuned:
+%      \begin{itemize}
+%        \item dppalomar/riskParityPortfolio
+%        \item dppalomar/riskparity.py
+%        \item dppalomar/portfolioBacktest
+%      \end{itemize}
+%  \end{enumerate}
+%\end{frame}
+%
+%\section{Thank you! Questions?}
 
 \begin{frame}{References}
   \vspace{.5cm}
